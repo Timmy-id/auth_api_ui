@@ -1,16 +1,16 @@
 import { Route, Routes } from 'react-router-dom'
-import Login from './pages/auth/Login'
-import Register from './pages/auth/Register'
-import Home from './pages/home/Home'
+import Auth from './pages/auth/auth'
+import Home from './pages/home/home'
+import Profile from './pages/profile/profile'
 
 function App() {
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path='/' element={<Home />} />
+        <Route path="/me" element={<Profile />} />
+        <Route path="/login" element={<Auth />} />
       </Routes>
     </>
   )

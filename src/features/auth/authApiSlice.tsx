@@ -1,4 +1,4 @@
-import { apiSlice } from '../../app/services/auth'
+import { apiSlice } from '../../app/services/authApi'
 import { logout } from './authSlice'
 
 export const authApiSlice = apiSlice.injectEndpoints({
