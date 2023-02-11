@@ -11,10 +11,12 @@ import {
     FormControl,
     FormLabel,
     HStack,
-    Link
+    Link,
+    useToast
 } from '@chakra-ui/react'
 import { useLoginUserMutation } from '../../app/services/authApi'
-import { toast } from 'react-toastify'
+import { useAppDispatch } from '../../app/hooks'
+import { setCredentials } from '../../features/auth/authSlice'
 
 const initialState = {
     name: '',
@@ -26,6 +28,8 @@ const initialState = {
 const Auth = () => {
     const [show, setShow] = useState<boolean>(false)
     const [showRegister, setShowRegister] = useState<boolean>(false)
+    const dispatch = useAppDispatch()
+
     const [
         loginUser, 
         {
@@ -37,6 +41,7 @@ const Auth = () => {
     ] = useLoginUserMutation()
 
     const navigate = useNavigate()
+    const toast = useToast()
 
     const handleClick = () => setShow(!show)
 
@@ -44,24 +49,37 @@ const Auth = () => {
         if (email && password) {
             await loginUser({ email, password })
         } else {
-            toast.error('All fields are required')
+            toast({
+                title: 'All fields are required',
+                isClosable: true,
+                status: 'error',
+                duration: 3000,
+                position: 'top-right'
+            })
         }
     }
 
     useEffect(() => {
         if (loginSuccess) {
-            toast.success('User logged in successfully')
-            navigate('/profile')
+            toast({
+                title: 'Login Success',
+                isClosable: true,
+                status: 'success',
+                duration: 6000,
+                position: 'top-right'
+            })
+            dispatch(setCredentials({ token: loginData.access_token }))
+            navigate('/me')
         }
     }, [loginSuccess])
+
+    const [formValue, setFormValue] = useState(initialState)
+    const { name, email, password, passwordConfirm } = formValue
 
     const handleChange = (e: any) => {
         setFormValue({ ...formValue, [e.target.name]: e.target.value })
     }
 
-    const [formValue, setFormValue] = useState(initialState)
-    const { name, email, password, passwordConfirm } = formValue
-    
     return (
         <Center h='500px'>
             <VStack spacing='4'>
@@ -75,6 +93,7 @@ const Auth = () => {
                                 <FormLabel>Full Name</FormLabel>
                                 <Input 
                                     type='text'
+                                    name='name'
                                     placeholder='Enter name'
                                     value={name}
                                     onChange={handleChange}
@@ -88,6 +107,7 @@ const Auth = () => {
                         <FormLabel>Email</FormLabel>
                         <Input 
                             type='text'
+                            name='email'
                             placeholder='Enter email'
                             value={email}
                             onChange={handleChange}
@@ -100,6 +120,7 @@ const Auth = () => {
                         <FormLabel>Password</FormLabel>
                         <Input 
                             pr='4.5rem'
+                            name='password'
                             type={show ? 'text' : 'password'}
                             placeholder='Enter password'
                             value={password}
@@ -123,6 +144,7 @@ const Auth = () => {
                             <FormLabel>Confirm Password</FormLabel>
                             <Input 
                                 pr='4.5rem'
+                                name='passwordConfirm'
                                 type={show ? 'text' : 'password'}
                                 placeholder='Enter confirm password'
                                 value={passwordConfirm}
